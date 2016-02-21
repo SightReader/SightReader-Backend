@@ -8,7 +8,7 @@ var express = require('express'),
     generateNotesStream = require('./generateNotesStream');
 
 var expressApp = express(), 
-    expressServer = expressApp.listen(8000),
+    expressServer = expressApp.listen(8001),
     ioApp = socketIo(expressServer);
 
 expressApp.use(express.static('web'));
@@ -44,7 +44,6 @@ ioApp.on('connection', function (socket) {
     
     socket.on('error', function(exception) {
         console.log('SOCKET ERROR' + exception.toString());
-        socket.destroy();
     });
 
     /* 
