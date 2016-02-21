@@ -7,11 +7,11 @@ var express = require('express'),
     logger = require('./logger'),
     generateNotesStream = require('./generateNotesStream');
 
-var expressApp = express().listen(80), 
+var expressApp = express(), 
     ioApp = socketIo(expressApp);
 
+expressApp.listen(80);
 expressApp.use(express.static('web'));
-
 expressApp.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods',
