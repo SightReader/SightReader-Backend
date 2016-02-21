@@ -27,5 +27,8 @@
     "object-assign": "^4.0.1",
     "socket.io": "^1.4.5",
     "sqlite3": "^3.1.1"
+  },
+  "devDependencies": {
+    "q": "^1.4.1"
   }
 }
