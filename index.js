@@ -162,7 +162,7 @@ ioApp.on('connection', function (socket) {
         
         _notesPlayed.concat(data);
         
-        var analysis = compare2NotesLists(_notesToPlay, _notesPlayed);
+        var analysis = compare2NotesLists(_notesToPlay, data, _bpm);
         
         callbackFunction(analysis);
         logger.log(JSON.stringify(analysis));
