@@ -14,8 +14,6 @@ ioApp.on('connection', function (socket) {
     var _sessionNumber,
         _bpm,
         _keys;
-    
-    socket.join(_sessionNumber);
 
     /* 
         Browser web app is initializing a session
@@ -27,7 +25,9 @@ ioApp.on('connection', function (socket) {
     */
     socket.on('initializeSession', function (data, callbackFunction) {
         var bpm = data.bpm,
-            keys = data.keys;
+            keys = data.keys, 
+            
+            sessionNumber = randomStringGenerator(5);
         
         if (isNaN(Number(bpm)) || bpm < 1) {
             callbackFunction(new Error("BPM must be a positive, " + 
@@ -44,7 +44,9 @@ ioApp.on('connection', function (socket) {
             return;
         }
         
-        _sessionNumber = randomStringGenerator(5);
+        socket.join(sessionNumber);
+        
+        _sessionNumber = sessionNumber;
         _bpm = bpm;
         _keys = keys;
         callbackFunction({
