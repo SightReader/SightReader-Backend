@@ -64,17 +64,25 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
             if (noteObject.duration === 
                 actualNotesList[middleIndex + 1].duration) {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * 0.5));
+                    Math.round((100 / userNotesList.length * 0.333));
             } else {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * (0.5 * 0.5)));
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
+            }
+            
+            if (noteObject.start === 
+                actualNotesList[middleIndex + 1].start) {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * 0.333));
+            } else {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
             }
             
             similarityScore += 
-                Math.round((100 / userNotesList.length * 0.5));
+                Math.round((100 / userNotesList.length * 0.333));
             
             return middleIndex + 1;
-            
         }
         
         if (middleIndex - 1 >= 0 && 
@@ -82,41 +90,68 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
             if (noteObject.duration === 
                 actualNotesList[middleIndex - 1].duration) {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * 0.5));
+                    Math.round((100 / userNotesList.length * 0.333));
             } else {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * (0.5 * 0.5)));
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
+            }
+            
+            if (noteObject.start === 
+                actualNotesList[middleIndex - 1].start) {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * 0.333));
+            } else {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
             }
             
             similarityScore += 
-                Math.round((100 / userNotesList.length * 0.5));
+                Math.round((100 / userNotesList.length * 0.333));
             
             return middleIndex - 1;
         }
         
         if (actualNotesList[middleIndex].pitch === noteObject.pitch) {
             similarityScore += 
-                Math.round((100 / userNotesList.length * 0.5));
+                Math.round((100 / userNotesList.length * 0.333));
             
             if (noteObject.duration === 
                 actualNotesList[middleIndex].duration) {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * 0.5));
+                    Math.round((100 / userNotesList.length * 0.333));
             } else {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * (0.5 * 0.5)));
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
+            }
+            
+            if (noteObject.start === 
+                actualNotesList[middleIndex].start) {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * 0.333));
+            } else {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
             }
             return middleIndex;
         } 
         else {
-            similarityScore += (100 / userNotesList.length * (0.5 * 0.5));
+            similarityScore += (100 / userNotesList.length * (0.333 * 0.5));
             if (noteObject.duration === 
                 actualNotesList[middleIndex].duration) {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * 0.5));
+                    Math.round((100 / userNotesList.length * 0.333));
             } else {
                 similarityScore += 
-                    Math.round((100 / userNotesList.length * (0.5 * 0.5)));
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
+            }
+            
+            if (noteObject.start === 
+                actualNotesList[middleIndex].start) {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * 0.333));
+            } else {
+                similarityScore += 
+                    Math.round((100 / userNotesList.length * (0.333 * 0.5)));
             }
             
             return middleIndex;
