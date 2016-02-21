@@ -3,10 +3,11 @@ var express = require('express'),
     http = require('http'),
 
     randomStringGenerator = require('./randomStringGenerator'), 
-    logger = require('./logger');
+    logger = require('./logger'),
+    generateNotesStream = require('./generateNotesStream');
 
-var expressApp = express(), 
-    ioApp = socketIo(expressApp.listen(80));
+var expressApp = express().listen(80), 
+    ioApp = socketIo(expressApp);
 
 
 ioApp.on('connection', function (socket) {
@@ -64,7 +65,7 @@ ioApp.on('connection', function (socket) {
     */
     socket.on('requestNotesStream', function (data, callbackFunction) {
         // Interval of Music Stream (in minutes)
-        var musicStreamDuration = data.duration;
+        var duration = data.duration;
         
         // Make sure that parameters of request are valid
         if (_sessionNumber === undefined) {
@@ -72,8 +73,8 @@ ioApp.on('connection', function (socket) {
             logger.log("Session not initialized. Error.");
             return;
         }
-        if (isNaN(Number(musicStreamDuration)) || 
-            musicStreamDuration < 1) {
+        if (isNaN(Number(duration)) || 
+            duration < 1) {
             callbackFunction(new Error("Positive, non-zero music " + 
                                        "stream duration (in minutes) " + 
                                        "required."));
@@ -82,19 +83,27 @@ ioApp.on('connection', function (socket) {
             return;
         }
         
-        // Minimum amount of beats to generate for Music Stream
-        var minimumBeatsToGenerate = _bpm * musicStreamDuration, 
-            // Low and High limit for pitches of notes 
-            pitchRange = (function () {
+        // Low and High limit for pitches of notes 
+        var pitchRange = (function () {
                 var leftoverOffset = (128 - _keys) / 2;
                 return {
-                    low: leftoverOffset,
-                    high: _keys + leftoverOffset
+                    low: Math.ceil(leftoverOffset),
+                    high: Math.floor(_keys + leftoverOffset)
                 };
-            }());
+            }()),
+            
+            notesStream = generateNotesStream({
+                pitch: pitchRange, 
+                bpm: _bpm, 
+                duration: duration
+            });
         
         
-        ioApp.to(_sessionNumber);
+        callbackFunction(notesStream);
+        socket
+            .broadcast
+            .to(_sessionNumber)
+            .emit('responseNotesStream', notesStream);
     });
 
 });

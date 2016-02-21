@@ -24,6 +24,7 @@
   "homepage": "https://github.com/SightReader/SightReader-Backend#readme",
   "dependencies": {
     "express": "^4.13.4",
+    "object-assign": "^4.0.1",
     "socket.io": "^1.4.5",
     "sqlite3": "^3.1.1"
   }
