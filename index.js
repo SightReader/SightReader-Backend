@@ -2,6 +2,7 @@ var express = require('express'),
     socketIo = require('socket.io'), 
     http = require('http'),
 
+    compare2NotesLists = require('./compare2NotesLists'),
     randomStringGenerator = require('./randomStringGenerator'), 
     logger = require('./logger'),
     generateNotesStream = require('./generateNotesStream');
@@ -10,11 +11,18 @@ var expressApp = express().listen(80),
     ioApp = socketIo(expressApp);
 
 
+function generateSessionNumber() {
+    return randomStringGenerator(6);
+}
+
 ioApp.on('connection', function (socket) {
 
     var _sessionNumber,
         _bpm,
-        _keys;
+        _keys,
+        
+        _notesToPlay,
+        _notesPlayed;
 
     /* 
         Browser web app is initializing a session
@@ -28,7 +36,7 @@ ioApp.on('connection', function (socket) {
         var bpm = data.bpm,
             keys = data.keys, 
             
-            sessionNumber = randomStringGenerator(5);
+            sessionNumber = generateSessionNumber();
         
         if (isNaN(Number(bpm)) || bpm < 1) {
             callbackFunction(new Error("BPM must be a positive, " + 
@@ -68,8 +76,8 @@ ioApp.on('connection', function (socket) {
         var duration = data.duration;
         
         // Make sure that parameters of request are valid
-        if (_sessionNumber === undefined) {
-            callbackFunction(new Error("Session not inialized. Error."));
+        if (_sessionNumber === undefined || _sessionNumber === null) {
+            callbackFunction(new Error("Session not initialized. Error."));
             logger.log("Session not initialized. Error.");
             return;
         }
@@ -98,12 +106,106 @@ ioApp.on('connection', function (socket) {
                 duration: duration
             });
         
+        _notesToPlay = notesStream;
         
         callbackFunction(notesStream);
+        
         socket
             .broadcast
             .to(_sessionNumber)
             .emit('responseNotesStream', notesStream);
+    });
+    
+    /*
+        Browser web app is requesting to provide a stream of notes
+        Must receive this from the front-end:
+        [{
+            start (Float),
+            pitch (Integer),
+            duration (Float)
+        }]
+    */
+    socket.on('provideNotesStream', function (data, callbackFunction) {
+        if (_notesToPlay === undefined || _notesToPlay === null) {
+            callbackFunction(new Error("requestNotesStream hasn't been " + 
+                                       "called. Error."));
+            logger.log("requestNotesStream hasn't been called. Error");
+            return;
+        }
+        
+        // Make sure that parameters of request are valid
+        if ([].constructor === Array) {
+            callbackFunction(new Error("You must provide an Array " + 
+                                       "of Objects"));
+            logger.log("You must provide an Array of Objects");
+            return;
+        }
+        var listFormattedCorrectly = 
+            data.reduce(function (previousValue, currentValue) {
+                if (previousValue === false) {
+                    return false;
+                }
+
+                if (data.hasOwnProperty('start') && 
+                    data.hasOwnProperty('pitch') && 
+                    data.hasOwnProperty('duration')) {
+                    return true;
+                }
+            }, true);
+        if (!listFormattedCorrectly) {
+            callbackFunction(new Error("You must provide a correctly " +
+                                       "formatted Array of Objects"));
+            logger.log("You must provide a correctly formatted " + 
+                       "Array of Objects");
+            return;
+        }
+        
+        _notesPlayed.concat(data);
+        
+        var analysis = compare2NotesLists(_notesToPlay, _notesPlayed);
+        
+        callbackFunction(analysis);
+        logger.log(JSON.stringify(analysis));
+    });
+    
+    
+    /* 
+        Browser web app is requesting its session to be merged to 
+        another session.
+    */
+    socket.on('joinSession', function (data, callbackFunction) {
+        var sessionNumber = data.sessionNumber;
+        
+        // Make sure that parameters of request are valid
+        if (sessionNumber === undefined || sessionNumber === null || 
+            String(sessionNumber).length !== 6) {
+            callbackFunction(new Error("Session ID is invalid."));
+            logger.log(new Error("Session ID is invalid."));
+            return;
+        }
+        
+        socket.join(sessionNumber);
+        _sessionNumber = sessionNumber;
+        
+        callbackFunction(sessionNumber);
+    });
+    
+    /*
+        Browser web app is requesting to leave a session
+    */
+    socket.on('leaveSession', function (data, callbackFunction) {
+        
+        // Make sure that the state of the app is correct
+        if (_sessionNumber === undefined || _sessionNumber === null) {
+            callbackFunction(new Error("You are not in a session."));
+            logger.log(new Error("You are not in a session."));
+            return;
+        }
+        
+        socket.leave(_sessionNumber);
+        _sessionNumber = generateSessionNumber();
+        
+        callbackFunction(_sessionNumber);
     });
 
 });
