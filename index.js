@@ -10,6 +10,24 @@ var express = require('express'),
 var expressApp = express().listen(80), 
     ioApp = socketIo(expressApp);
 
+expressApp.use(express.static('web'));
+
+expressApp.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods',
+                  'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers',
+                  'X-Requested-With, content-type, authorization, ' + 
+                  'accept, origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    if (req.method === "OPTIONS") {
+        res.send(200);
+    } else {
+        next();	
+    }
+});
+
 
 function generateSessionNumber() {
     return randomStringGenerator(6);
