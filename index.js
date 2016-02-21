@@ -8,9 +8,9 @@ var express = require('express'),
     generateNotesStream = require('./generateNotesStream');
 
 var expressApp = express(), 
-    ioApp = socketIo(expressApp);
+    expressServer = expressApp.listen(80),
+    ioApp = socketIo(expressServer);
 
-expressApp.listen(80);
 expressApp.use(express.static('web'));
 expressApp.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
