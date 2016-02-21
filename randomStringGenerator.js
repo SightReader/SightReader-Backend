@@ -23,12 +23,12 @@ function randomStringGenerator(length) {
         
         // Generate a number
         if (numberOrLetter === 0) {
-            return String(Math.round(Math.random() * 9));
+            return String(Math.floor(Math.random() * 10));
         } 
         
         // Generate a letter
         return String.fromCharCode('a'.charCodeAt(0) + 
-                                   Math.round(Math.random() * 26));
+                                   Math.floor(Math.random() * 26));
     }
     
     while (i < length) {
