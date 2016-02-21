@@ -59,7 +59,7 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
         }
 
         
-        if (middleIndex + 1 <= actualNotesList.length && 
+        if (middleIndex + 1 < actualNotesList.length && 
             actualNotesList[middleIndex + 1].pitch === noteObject.pitch) {
             if (noteObject.duration === 
                 actualNotesList[middleIndex + 1].duration) {
@@ -80,7 +80,7 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
         if (middleIndex - 1 >= 0 && 
             actualNotesList[middleIndex - 1].pitch === noteObject.pitch) {
             if (noteObject.duration === 
-                actualNotesList[middleIndex + 1].duration) {
+                actualNotesList[middleIndex - 1].duration) {
                 similarityScore += 
                     Math.round((100 / userNotesList.length * 0.5));
             } else {
@@ -99,7 +99,7 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
                 Math.round((100 / userNotesList.length * 0.5));
             
             if (noteObject.duration === 
-                actualNotesList[middleIndex + 1].duration) {
+                actualNotesList[middleIndex].duration) {
                 similarityScore += 
                     Math.round((100 / userNotesList.length * 0.5));
             } else {
@@ -111,7 +111,7 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
         else {
             similarityScore += (100 / userNotesList.length * (0.5 * 0.5));
             if (noteObject.duration === 
-                actualNotesList[middleIndex + 1].duration) {
+                actualNotesList[middleIndex].duration) {
                 similarityScore += 
                     Math.round((100 / userNotesList.length * 0.5));
             } else {
@@ -133,3 +133,5 @@ function compare2NotesLists(actualNotesList, userNotesList, bpm) {
     };
 
 }
+
+module.exports = exports = compare2NotesLists;
